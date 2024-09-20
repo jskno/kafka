@@ -1,0 +1,50 @@
+
+import com.github.davidmc24.gradle.plugin.avro.GenerateAvroJavaTask
+
+plugins {
+    id 'java'
+//    id "com.github.davidmc24.gradle.plugin.avro" version "1.0.0"
+    id "com.github.davidmc24.gradle.plugin.avro-base" version "1.0.0"
+}
+
+ext {
+    avroVersion = '1.10.1'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://packages.confluent.io/maven/" }
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    implementation "org.apache.avro:avro:1.10.1"
+
+    implementation "org.apache.avro:avro-tools:${avroVersion}"
+
+    implementation "io.confluent:kafka-avro-serializer:5.5.1"
+
+    //log
+    implementation 'ch.qos.logback:logback-core:1.2.11'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+def generateAvro = tasks.register("generateAvro", GenerateAvroJavaTask) {
+    source("src/main/avro")
+    outputDir = file("src/main/java")
+}
+
+tasks.named("compileJava").configure {
+    source(generateAvro)
+}
+
+test {
+    useJUnitPlatform()
+}

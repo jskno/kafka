@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: my-library-events-producer-2
+  profiles:
+    active: local
+---
+spring:
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        retries: 10
+        partitioner:
+          class: org.apache.kafka.clients.producer.RoundRobinPartitioner

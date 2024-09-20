@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092, localhost:9093, localhost:9094
+    admin:
+      properties:
+        bootstrap.servers: localhost:9092, localhost:9093, localhost:9094
+    template:
+      default-topic: library-events
+
+library:
+  events:
+    kafka:
+      topic: library-events
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,loggers,restart, beans, env
+  endpoint:
+    env:
+      show-values: ALWAYS
+    health:
+      show-details: always
+    info:
+      enabled: true

@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'com.jskno'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.apache.kafka:kafka-streams'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    // https://mvnrepository.com/artifact/io.confluent/kafka-connect-avro-converter
+    implementation group: 'io.confluent', name: 'kafka-connect-avro-converter', version: '7.3.0'
+    // https://mvnrepository.com/artifact/io.confluent/kafka-avro-serializer
+    implementation group: 'io.confluent', name: 'kafka-avro-serializer', version: '7.3.0'
+    // https://mvnrepository.com/artifact/io.confluent/kafka-connect-avro-data
+    implementation group: 'io.confluent', name: 'kafka-connect-avro-data', version: '7.3.0'
+    // https://mvnrepository.com/artifact/io.confluent/kafka-schema-serializer
+    implementation group: 'io.confluent', name: 'kafka-schema-serializer', version: '7.3.0'
+
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

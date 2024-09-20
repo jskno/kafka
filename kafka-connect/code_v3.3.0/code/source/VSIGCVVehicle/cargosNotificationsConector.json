@@ -1,0 +1,36 @@
+{
+  "name": "connector-event-cargos-notifications",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "connection.url": "jdbc:sqlserver://ls_dbdev.aws.goldcar.dev:1433;database=BDSIGGERDEV;encrypt=false;",
+    "connection.user": "SIGGER",
+    "connection.password": "reggis2005",
+    "connection.attempts": "3",
+    "connection.backoff.ms": "10000",
+    "dialect.name": "SqlServerDatabaseDialect",
+    "mode": "incrementing",
+    "incrementing.column.name": "timestamp_bigint",
+    "validate.non.null": "false",
+    "query": "SELECT * from dbo.VCargosNotifications",
+    "table.types": "VIEW",
+    "poll.interval.ms": "10000",
+    "topic.prefix": "topic-cargos-notifications",
+    "allow.auto.create.topics": "true",
+    "auto.create.topics.enable": "true",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "http://localhost:8081",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "true",
+    "transforms": "SetSchemaMetadata, CreateKey, ExtractString",
+    "transforms.CreateKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.CreateKey.fields": "contractId",
+    "transforms.ExtractString.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.ExtractString.field": "contractId",
+    "transforms.SetSchemaMetadata.schema.version": "1",
+    "transforms.SetSchemaMetadata.type": "org.apache.kafka.connect.transforms.SetSchemaMetadata$Value",
+    "transforms.SetSchemaMetadata.schema.name": "com.europcar.avro.CargosNotification"
+  }
+}

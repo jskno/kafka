@@ -1,0 +1,75 @@
+
+POST WITH-NULL-LIBRARY-EVENT-ID
+---------------------
+curl -i \
+-d '{"id":null,"type": "NEW","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:8080/v1/library-events
+
+POST WITH-NULL-LIBRARY-EVENT-ID SYNC
+---------------------
+curl -i \
+-d '{"id":null,"type": "NEW","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:8080/v1/library-events/sync
+
+POST WITH-NULL-LIBRARY-EVENT-ID RECORD
+---------------------
+curl -i \
+-d '{"id":null,"type": "NEW","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:8080/v1/library-events/record
+
+POST WITH-NULL-LIBRARY-EVENT-ID HEADERS
+---------------------
+curl -i \
+-d '{"id":null,"type": "NEW","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X POST http://localhost:8080/v1/library-events/headers
+
+PUT WITH ID - 1
+--------------
+curl -i \
+-d '{"id":1,"type": "UPDATE","book":{"id":456,"name":"Kafka Using Spring Boot 2.X","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/library-events
+
+curl -i \
+-d '{"id":2,"type": "UPDATE","book":{"id":456,"name":"Kafka Using Spring Boot 2.X","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/library-events
+
+PUT WITH ID
+---------------------
+curl -i \
+-d '{"id":123,"type": "UPDATE","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/library-events
+
+curl -i \
+-d '{"id":666,"type": "UPDATE","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/library-events
+
+curl -i \
+-d '{"id":2,"type": "UPDATE","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/libraryevent
+
+
+PUT WITHOUT ID
+---------------------
+curl -i \
+-d '{"id":null,"type": "UPDATE","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/library-events
+
+PUT WITH WRONG EVENT TYPE
+---------------------
+curl -i \
+-d '{"id":1264,"type": "NEW","book":{"id":456,"name":"Kafka Using Spring Boot","author":"Dilip"}}' \
+-H "Content-Type: application/json" \
+-X PUT http://localhost:8080/v1/library-events
+
+
+./kafka-topics.sh --create --topic library-events.DLT --replication-factor 1 --partitions 4 --bootstrap-server localhost:9092

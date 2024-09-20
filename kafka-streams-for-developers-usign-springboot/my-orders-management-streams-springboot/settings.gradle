@@ -1,0 +1,4 @@
+rootProject.name = 'my-orders-management-streams-springboot'
+include 'orders-domain'
+include 'orders-streams-app'
+

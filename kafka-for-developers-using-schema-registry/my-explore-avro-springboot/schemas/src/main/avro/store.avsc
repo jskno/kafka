@@ -1,0 +1,15 @@
+{
+  "name": "Store",
+  "namespace": "com.jskno.avro.generated",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "long"
+    },
+    {
+      "name": "address",
+      "type": "Address"
+    }
+  ]
+}

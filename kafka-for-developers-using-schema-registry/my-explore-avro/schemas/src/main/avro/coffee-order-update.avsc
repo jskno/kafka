@@ -1,0 +1,15 @@
+{
+  "name": "CoffeeOrderUpdate",
+  "namespace": "com.jskno.avro.generated",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "OrderId"
+    },
+    {
+      "name": "status",
+      "type": "CoffeeOrderStatus"
+    }
+  ]
+}

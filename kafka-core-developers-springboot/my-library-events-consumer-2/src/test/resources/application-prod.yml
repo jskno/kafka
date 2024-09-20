@@ -1,0 +1,23 @@
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: nonprod:9092, nonprod:9093, nonprod:9094
+
+
+library:
+  events:
+    kafka:
+      topic: library-events
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,loggers,restart, beans, env
+  endpoint:
+    env:
+      show-values: ALWAYS
+    health:
+      show-details: always
+    info:
+      enabled: true

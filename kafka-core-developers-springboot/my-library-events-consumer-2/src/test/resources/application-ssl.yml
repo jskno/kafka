@@ -1,0 +1,56 @@
+spring:
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      ssl:
+        trust-store-location: file:/My_Folder/courses/kafka/kafka-core-developers-springboot/my-library-events-consumer-2/secrets/kafka.consumer.truststore.jks
+        trust-store-password: confluent
+        key-store-location: file:/My_Folder/courses/kafka/kafka-core-developers-springboot/my-library-events-consumer-2/secrets/kafka.consumer.keystore.jks
+        key-store-password: confluent
+      properties:
+        acks: all
+        retries: 10
+        retry.backoff.ms: 1000
+        security:
+          protocol: SSL
+        ssl.endpoint.identification.algorithm:
+    producer:
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      ssl:
+        trust-store-location: file:/My_Folder/courses/kafka/kafka-core-developers-springboot/my-library-events-consumer-2/secrets/kafka.producer.truststore.jks
+        trust-store-password: confluent
+        key-store-location: file:/My_Folder/courses/kafka/kafka-core-developers-springboot/my-library-events-consumer-2/secrets/kafka.producer.keystore.jks
+        key-store-password: confluent
+    admin:
+      properties:
+        bootstrap.servers: localhost:9092, localhost:9093, localhost:9094
+
+
+library:
+  events:
+    kafka:
+      topic: library-events
+      startup.a: true
+      startup.b: false
+      startup.c: false
+      first.retry.topic: library-events-first-retry
+      startup.first.retry.topic: true
+      second.retry.topic: library-events-second-retry
+      startup.second.retry.topic: true
+      third.retry.topic: library-events-third-retry
+      startup.third.retry.topic: true
+      dlt.topic: library-events-dlt
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,loggers,restart, beans, env
+  endpoint:
+    env:
+      show-values: ALWAYS
+    health:
+      show-details: always
+    info:
+      enabled: true

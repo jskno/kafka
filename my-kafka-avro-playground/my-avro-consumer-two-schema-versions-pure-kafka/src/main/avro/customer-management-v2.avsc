@@ -1,0 +1,12 @@
+{
+  "namespace": "com.jskno.confluent.cloud.model.customer",
+  "type": "record",
+  "name": "CustomerV2",
+  "fields": [
+    {"name": "id", "type": "long"},
+    {"name": "name", "type": "string"},
+    {"name": "email", "type": ["null", "string"],
+      "default": null
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+spring:
+  kafka:
+    streams:
+      bootstrap-servers: kafka-prod.com:9092

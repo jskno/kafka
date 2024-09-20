@@ -1,0 +1,75 @@
+{
+  "name": "CoffeeOrderComplexId",
+  "namespace": "com.jskno.avro.generated",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": "OrderId"
+    },
+    {
+      "name": "UUID",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "nickname",
+      "type": "string",
+      "default": "",
+      "doc": "Optional field represents the nickname of the customer"
+    },
+    {
+      "name": "additionalNickname",
+      "type": "string",
+      "default": "",
+      "doc": "Optional field represents the nickname of the customer"
+    },
+    {
+      "name": "store",
+      "type": "Store"
+    },
+    {
+      "name": "orderLineItems",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "orderLineItems",
+          "type": "OrderLineItem"
+        }
+      }
+    },
+    {
+      "name": "pickUp",
+      "type": {
+        "type": "enum",
+        "name": "PickUp",
+        "symbols": ["IN_STORE", "CURBSIDE"]
+      }
+    },
+    {
+      "name": "orderTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "orderDate",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      }
+    },
+    {
+      "name": "status",
+      "type": "string",
+      "default": "NEW"
+    }
+  ]
+}

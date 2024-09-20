@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.github.davidmc24.gradle.plugin.avro' version '1.1.0'
+    id 'com.github.davidmc24.gradle.plugin.avro-base' version '1.1.0'
+}
+
+group = 'com.jskno'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    maven { url "https://packages.confluent.io/maven/" }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'org.apache.kafka:kafka-clients:3.8.0'
+    implementation 'io.confluent:kafka-avro-serializer:7.7.0'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+//sourceSets {
+//    main {
+//        java {
+//            srcDir "${buildDir.absolutePath}" + generated_avro_directory
+//        }
+//    }
+//    test {
+//        resources {
+//            srcDir file('src/test/java')
+//            exclude '**/*.java'
+//        }
+//    }
+//}

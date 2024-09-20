@@ -1,0 +1,36 @@
+{
+  "name": "connector-event-vehicle-sig-cv",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "connection.url": "jdbc:sqlserver://ls_dbdev.aws.goldcar.dev:1433;database=BDSIGGERDEV;encrypt=false;",
+    "connection.user": "SIGGER",
+    "connection.password": "reggis2005",
+    "connection.attempts": "3",
+    "connection.backoff.ms": "10000",
+    "dialect.name": "SqlServerDatabaseDialect",
+    "mode": "incrementing",
+    "incrementing.column.name": "id",
+    "validate.non.null": "false",
+    "query": "SELECT id, chassisNbr, previousStation, currentStation, previousSigStation, currentSigStation, projectedSigStation, projectedCheckinDate, previousSituation, currentSituation, updateTimestamp from dbo.VSIGCVVehicle",
+    "table.types": "VIEW",
+    "poll.interval.ms": "10000",
+    "topic.prefix": "topic-sig-cv-vehicle",
+    "allow.auto.create.topics": "true",
+    "auto.create.topics.enable": "false",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "io.confluent.connect.avro.AvroConverter",
+    "value.converter.schema.registry.url": "http://localhost:8081",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "true",
+    "transforms": "SetSchemaMetadata, CreateKey, ExtractString",
+    "transforms.CreateKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.CreateKey.fields": "chassisNbr",
+    "transforms.ExtractString.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.ExtractString.field": "chassisNbr",
+    "transforms.SetSchemaMetadata.schema.version": "1",
+    "transforms.SetSchemaMetadata.type": "org.apache.kafka.connect.transforms.SetSchemaMetadata$Value",
+    "transforms.SetSchemaMetadata.schema.name": "com.europcar.avro.SiggerConnectedVehicle"
+  }
+}

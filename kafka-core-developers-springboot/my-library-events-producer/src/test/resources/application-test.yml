@@ -1,0 +1,6 @@
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+    template:
+      default-topic: library-events

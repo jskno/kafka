@@ -1,0 +1,14 @@
+spring.application.name: my-greeting-streams-springboot
+spring:
+  profiles:
+    active: local
+  kafka:
+    streams:
+      application-id: greeting-streams-app
+    properties:
+      # Approach 1 to Deserialization errors
+#      default.deserialization.exception.handler: org.apache.kafka.streams.errors.LogAndContinueExceptionHandler
+      # Appraach 2 to Deserialization errors
+#      default.deserialization.exception.handler: com.jskno.greetings.exceptionhandler.StreamDeserializationExceptionHandler
+      production.exception.handler: com.jskno.greetings.exceptionhandler.StreamsSerializationExceptionHandler
+

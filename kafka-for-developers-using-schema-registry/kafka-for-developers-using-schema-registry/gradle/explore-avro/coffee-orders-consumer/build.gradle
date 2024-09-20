@@ -1,0 +1,51 @@
+
+plugins {
+    id 'java'
+}
+
+ext {
+    avroVersion = "1.10.0"
+}
+
+group 'com.learn-avro'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {url "https://packages.confluent.io/maven/"}
+    maven {url "https://jitpack.io"}
+
+}
+
+
+dependencies {
+
+    implementation project(':schemas')
+   //implementation "com.learnavro:schemas:1.0"
+
+    implementation "org.apache.avro:avro:1.10.1"
+
+    implementation "org.apache.avro:avro-tools:${avroVersion}"
+
+    //avro-serializer
+    implementation("io.confluent:kafka-avro-serializer:5.5.1")
+
+    //log
+    implementation 'ch.qos.logback:logback-core:1.2.11'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+
+    //test-implementation
+    testImplementation "org.junit.jupiter:junit-jupiter:5.6.2"
+
+
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+

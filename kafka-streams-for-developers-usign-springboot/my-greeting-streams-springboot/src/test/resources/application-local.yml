@@ -1,0 +1,4 @@
+spring:
+  kafka:
+    streams:
+      bootstrap-servers: localhost:9092

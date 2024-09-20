@@ -1,0 +1,11 @@
+{
+  "name":"Greeting",
+  "namespace": "com.jskno.avro",
+  "type": "record",
+  "fields": [
+    {
+      "name":"greeting",
+      "type": "string"
+    }
+  ]
+}

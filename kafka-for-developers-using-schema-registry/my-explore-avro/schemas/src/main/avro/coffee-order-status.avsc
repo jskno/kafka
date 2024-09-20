@@ -1,0 +1,6 @@
+{
+  "name": "CoffeeOrderStatus",
+  "namespace": "com.jskno.avro.generated",
+  "type": "enum",
+  "symbols": ["NEW", "PROCESSING", "READY_FOR_PICK_UP"]
+}

@@ -1,0 +1,9 @@
+{
+  "id": 123,
+  "type": "UPDATE",
+  "book": {
+    "id": 123,
+    "name": "Kafka Using Spring Boot",
+    "author": "Dilip"
+  }
+}

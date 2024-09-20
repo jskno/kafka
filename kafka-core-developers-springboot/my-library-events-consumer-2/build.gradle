@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'com.jskno'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    runtimeOnly 'com.h2database:h2'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    test {
+        java.srcDirs = ['src/test/java/unit', 'src/test/java/integration']
+    }
+}
+
+compileJava {
+    doFirst {
+        def generatedDirectory = new File(projectDir, generated_directory)
+        if (generatedDirectory.exists()) {
+            file(new File(projectDir, generated_directory)).deleteDir()
+        }
+        //Specify the destination directory for generated sources
+        options.compilerArgs << "-s"
+        options.compilerArgs << "$projectDir".concat(generated_directory)
+        file(new File(projectDir, generated_directory)).mkdirs()
+
+        options.compilerArgs += [
+                '-Amapstruct.suppressGeneratorTimestamp=true',
+                '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+                '-Amapstruct.verbose=true',
+                '-Amapstruct.defaultComponentModel=spring',
+                '-Amapstruct.defaultInjectionStrategy=constructor'
+        ]
+    }
+}
+
+sourceSets.main.java.srcDir file("$projectDir".concat(generated_directory))
+
+clean.doLast {
+    file(new File(projectDir, generated_directory)).deleteDir()
+    file(new File(projectDir, "KarateReports")).deleteDir()
+    file(new File(projectDir, "logs")).deleteDir()
+}

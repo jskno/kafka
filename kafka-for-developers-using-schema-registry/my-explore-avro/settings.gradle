@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven {
+            name "JCenter Gradle Plugins"
+            url  "https://dl.bintray.com/gradle/gradle-plugins"
+        }
+    }
+}
+
+rootProject.name = 'my-explore-avro'
+include 'greeting-app'
+include 'schemas'
+include 'coffee-orders-service'
+include 'coffee-orders-consumer'
+

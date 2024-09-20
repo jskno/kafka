@@ -1,0 +1,4 @@
+spring:
+  kafka:
+    producer:
+      bootstrap-servers: dev:9092,dev:9093,dev:9094

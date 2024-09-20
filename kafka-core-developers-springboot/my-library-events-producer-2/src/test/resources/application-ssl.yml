@@ -1,0 +1,42 @@
+spring:
+  kafka:
+
+    producer:
+      bootstrap-servers: localhost:9092, localhost:9093, localhost:9094
+      ssl:
+        trust-store-location: file:/My_Folder/courses/kafka/kafka-core-developers-springboot/my-library-events-producer-2/secrets/kafka.producer.truststore.jks
+        trust-store-password: confluent
+        key-store-location: file:/My_Folder/courses/kafka/kafka-core-developers-springboot/my-library-events-producer-2/secrets/kafka.producer.keystore.jks
+        key-store-password: confluent
+      properties:
+        acks: all
+        retries: 10
+        retry.backoff.ms: 1000
+        security:
+          protocol: SSL
+        ssl.endpoint.identification.algorithm:
+
+    admin:
+      properties:
+        bootstrap.servers: localhost:9092, localhost:9093, localhost:9094
+
+    template:
+      default-topic: library-events
+
+library:
+  events:
+    kafka:
+      topic: library-events
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,loggers,restart, beans, env
+  endpoint:
+    env:
+      show-values: ALWAYS
+    health:
+      show-details: always
+    info:
+      enabled: true
