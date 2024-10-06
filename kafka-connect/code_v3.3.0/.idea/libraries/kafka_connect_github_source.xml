@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="kafka-connect-github-source">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/httpclient-4.5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/commons-codec-1.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/slf4j-api-1.7.21.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/httpasyncclient-4.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/httpcore-nio-4.4.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/log4j-1.2.17.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/unirest-java-1.4.9.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/httpmime-4.5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/json-20160212.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/httpcore-4.4.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/slf4j-log4j12-1.7.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/commons-logging-1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/kafka-connect-github-source/kafka-connect-github-source-1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

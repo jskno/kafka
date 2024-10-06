@@ -77,7 +77,7 @@ public class OrderTopologyV3 {
 
         Aggregator<String, Order, TotalRevenue> aggregator = (k, v, aggregate) -> aggregate.updateRunningRevenue(k, v);
 
-        var revenueTable = ordersStream
+        KTable<String, TotalRevenue> revenueTable = ordersStream
             .map((k, v) -> KeyValue.pair(v.locationId(), v))
             .groupByKey(Grouped.with(Serdes.String(), SerdesFactory.jsonSerdes(Order.class)))
             .aggregate(initializer, aggregator, Materialized.<String, TotalRevenue, KeyValueStore<Bytes, byte[]>>as(ordersStore)

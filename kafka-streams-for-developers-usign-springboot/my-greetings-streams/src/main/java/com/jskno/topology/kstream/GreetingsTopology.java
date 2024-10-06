@@ -28,7 +28,7 @@ public class GreetingsTopology {
         KStream<String, String> greetingsSpanish = streamsBuilder
             .stream(GREETINGS_SPANISH, Consumed.with(Serdes.String(), Serdes.String()));
 
-        var mergedStream = greetingsStream.merge(greetingsSpanish);
+        KStream<String, String> mergedStream = greetingsStream.merge(greetingsSpanish);
 
         mergedStream
             .print(Printed.<String, String>toSysOut().withLabel("greetingsStream"));

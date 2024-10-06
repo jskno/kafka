@@ -24,7 +24,7 @@ public class GreetingsTopologyV5 {
         KStream<String, Greeting> greetingsStream = streamsBuilder.stream(GREETINGS);
         KStream<String, Greeting> greetingsSpanish = streamsBuilder.stream(GREETINGS_SPANISH);
 
-        var mergedStream = greetingsStream.merge(greetingsSpanish);
+        KStream<String, Greeting> mergedStream = greetingsStream.merge(greetingsSpanish);
 
         mergedStream
             .print(Printed.<String, Greeting>toSysOut().withLabel("greetingsStream"));
@@ -33,7 +33,7 @@ public class GreetingsTopologyV5 {
             .peek((key, value) -> log.info("after filter --> key: {}, value: {}", key, value))
             .map((key, value) -> KeyValue.pair(
                 key.toUpperCase() + "-CC",
-                    new Greeting(value.message().toUpperCase() + "-Confluent", value.timeStamp())))
+                new Greeting(value.message().toUpperCase() + "-Confluent", value.timeStamp())))
             .peek((key, value) -> log.info("after map --> key: {}, value: {}", key, value))
             .flatMap((key, value) -> {
                 List<String> newMessages = Arrays.asList(value.message().split(""));

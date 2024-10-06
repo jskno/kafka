@@ -3,6 +3,7 @@ package com.jskno.consumer;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -38,6 +39,8 @@ public class A_ConsumerDemo {
 
         // Subscribe consumer to our topic(s)
         consumer.subscribe(List.of("demo-java"));
+        consumer.subscribe(Pattern.compile("topic/.+"));
+//        consumer.subscribe(Pattern.compile("topic\..+"));
 
         // Poll for new data in a infinite loop
         while (true) {

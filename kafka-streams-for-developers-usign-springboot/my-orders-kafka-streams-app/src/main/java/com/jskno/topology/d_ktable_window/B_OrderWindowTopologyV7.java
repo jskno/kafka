@@ -124,6 +124,7 @@ public class B_OrderWindowTopologyV7 {
             SerdesFactory.jsonSerdes(TotalRevenue.class),
             SerdesFactory.jsonSerdes(Store.class));
 
+        // KStream-KTable --> KStream
         KStream<String, TotalRevenueWithAddress> revenueWithStoreTable = ordersRevenueByWindow
             .toStream()
             .map((k,v) -> KeyValue.pair(k.key(), v))

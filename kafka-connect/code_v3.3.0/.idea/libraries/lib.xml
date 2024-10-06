@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/code/connectors/jcustenborder-kafka-connect-twitter-0.3.34/lib/connect-utils-0.7.171.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/jcustenborder-kafka-connect-twitter-0.3.34/lib/kafka-connect-twitter-0.3.34.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/jcustenborder-kafka-connect-twitter-0.3.34/lib/value-2.8.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/jcustenborder-kafka-connect-twitter-0.3.34/lib/twitter4j-stream-4.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/jcustenborder-kafka-connect-twitter-0.3.34/lib/freemarker-2.3.31.jar!/" />
+      <root url="jar://$PROJECT_DIR$/code/connectors/jcustenborder-kafka-connect-twitter-0.3.34/lib/twitter4j-core-4.0.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

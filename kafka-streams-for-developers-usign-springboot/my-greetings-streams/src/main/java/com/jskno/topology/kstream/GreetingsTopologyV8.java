@@ -22,7 +22,7 @@ public class GreetingsTopologyV8 {
         KStream<String, Greeting> greetingsStream = streamsBuilder.stream(GREETINGS);
         KStream<String, Greeting> greetingsSpanish = streamsBuilder.stream(GREETINGS_SPANISH);
 
-        var mergedStream = greetingsStream.merge(greetingsSpanish);
+        KStream<String, Greeting> mergedStream = greetingsStream.merge(greetingsSpanish);
 
         mergedStream
             .print(Printed.<String, Greeting>toSysOut().withLabel("greetingsStream"));
