@@ -29,6 +29,8 @@ public class A_ConsumerDemo {
         properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "my-java-application");
 
+        // The auto offset reset consumer configuration defines how a consumer should behave
+        // when consuming from a topic partition when there is no initial offset
         // none: if we don't have any existing consumer group then we fail. We must set the consumer group before starting the application.
         // earliest: read from the beginning of the topic (--from-beginning)
         // latest: read only new messages onwards
