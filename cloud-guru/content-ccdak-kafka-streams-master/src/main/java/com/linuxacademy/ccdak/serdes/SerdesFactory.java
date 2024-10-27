@@ -3,6 +3,7 @@ package com.linuxacademy.ccdak.serdes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.List;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 
@@ -16,6 +17,12 @@ public class SerdesFactory {
         return Serdes.serdeFrom(
             new JsonSerializer<>(objectMapper),
             new JsonDeserializer<>(objectMapper, destinaltionClass));
+    }
+
+    public static <T> Serde<T> jsonSerdesList(Class<T> destinaltionClass) {
+        return Serdes.serdeFrom(
+            new JsonSerializer<>(objectMapper),
+            new JsonListDeserializer<>(objectMapper, destinaltionClass));
     }
 
 }

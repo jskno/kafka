@@ -33,7 +33,7 @@ public class JsonDeserializer<T> implements Deserializer<T> {
         try {
             return objectMapper.readValue(new String(bytes, StandardCharsets.UTF_8), destinationClass);
         } catch (JsonProcessingException e) {
-            throw new AppException("Something went wrong on deserializing message");
+            throw new AppException("Something went wrong on deserializing message", e);
         }
     }
 }

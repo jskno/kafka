@@ -13,7 +13,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.1'
 
-    implementation group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.36'
+    // logging
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
 
     testImplementation 'junit:junit:4.12'
 }

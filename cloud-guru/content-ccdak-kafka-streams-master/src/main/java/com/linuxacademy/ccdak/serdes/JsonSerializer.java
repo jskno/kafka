@@ -25,7 +25,7 @@ public class JsonSerializer<T> implements Serializer<T> {
         try {
             return objectMapper.writeValueAsBytes(t);
         } catch (JsonProcessingException e) {
-            throw new AppException("Something went wrong on parsing the message");
+            throw new AppException("Something went wrong on parsing the message", e);
         }
     }
 }

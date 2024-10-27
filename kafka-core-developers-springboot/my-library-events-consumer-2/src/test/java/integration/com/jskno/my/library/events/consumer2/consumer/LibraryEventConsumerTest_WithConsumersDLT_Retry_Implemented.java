@@ -298,8 +298,9 @@ public class LibraryEventConsumerTest_WithConsumersDLT_Retry_Implemented {
         Map<String, Object> props = KafkaTestUtils
             .consumerProps(groupId, "true", embeddedKafkaBroker);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-//        props.put("spring.kafka.consumer.properties.spring.json.value.default.type", "com.jskno.mylibraryeventsproducer2.domain.LibraryEventDTO");
-//        props.put("spring.kafka.consumer.properties.spring.json.add.type.headers", false);
+        props.put("spring.kafka.consumer.properties.spring.json.value.default.type",
+            "com.jskno.mylibraryeventsproducer2.domain.LibraryEventDTO");
+        props.put("spring.kafka.consumer.properties.spring.json.add.type.headers", false);
         props.put("spring.kafka.consumer.properties.spring.json.trusted.packages", "*");
         return new DefaultKafkaConsumerFactory<>(props, new LongDeserializer(), jsonDes).createConsumer();
     }

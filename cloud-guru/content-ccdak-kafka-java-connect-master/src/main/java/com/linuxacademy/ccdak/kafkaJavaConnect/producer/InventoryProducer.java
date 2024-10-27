@@ -15,33 +15,40 @@ import java.util.Random;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InventoryProducer {
 
+    private static final Logger log = LoggerFactory.getLogger(InventoryProducer.class);
+
     public static void main(String[] args) {
         Properties properties = buildProducerProperties();
-        try (KafkaProducer<String, Inventory> kafkaProducer = new KafkaProducer<>(properties)) {
+        try (KafkaProducer<Long, Inventory> kafkaProducer = new KafkaProducer<>(properties)) {
 
-            for (int i = 0; i < 1000; i++) {
-                ProducerRecord<String, Inventory> record = buildProducerRecord();
+            for (int i = 0; i < 100; i++) {
+                ProducerRecord<Long, Inventory> record = buildProducerRecord();
+                log.info("Key: " + record.key() + " Value: " + record.value());
                 kafkaProducer.send(record);
             }
             kafkaProducer.flush();
+            kafkaProducer.close();
         }
     }
 
-    private static ProducerRecord<String, Inventory> buildProducerRecord() {
-        int random = new Random().nextInt(24) + 1;
-        String key = "Product" + random;
+    private static ProducerRecord<Long, Inventory> buildProducerRecord() {
+        long key = new Random().nextInt(99) + 1;
+        String product = "Product" + key;
         int quantity = new Random().nextInt(1000) + 1;
-        return new ProducerRecord<>(AppConstants.INVENTORY_TOPIC, key, new Inventory(key, quantity));
+        return new ProducerRecord<>(AppConstants.INVENTORY_TOPIC, key, new Inventory(key, product, quantity));
     }
 
     private static Properties buildProducerProperties() {
         Properties properties = readConfig(AppConstants.CONFIG_FILE);
 //        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "");
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
         return properties;
 

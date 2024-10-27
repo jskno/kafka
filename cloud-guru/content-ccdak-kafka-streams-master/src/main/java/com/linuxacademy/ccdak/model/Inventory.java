@@ -2,15 +2,26 @@ package com.linuxacademy.ccdak.model;
 
 public class Inventory {
 
+    private Long id;
+
     private String product;
     private Integer quantity;
 
     public Inventory() {
     }
 
-    public Inventory(String product, Integer quantity) {
+    public Inventory(Long id, String product, Integer quantity) {
+        this.id = id;
         this.product = product;
         this.quantity = quantity;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getProduct() {
