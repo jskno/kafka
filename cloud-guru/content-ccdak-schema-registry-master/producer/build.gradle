@@ -1,0 +1,32 @@
+plugins {
+    id 'application'
+    id "com.github.davidmc24.gradle.plugin.avro" version "1.9.1"
+
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    maven { url "https://packages.confluent.io/maven/" }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.kafka:kafka-clients:3.8.0'
+    implementation 'io.confluent:kafka-avro-serializer:7.7.1'
+
+    testImplementation(platform('org.junit:junit-bom:5.11.3'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
