@@ -1,10 +1,9 @@
 package com.jskno.productsapp.service;
 
+import com.jskno.kafka.event.driven.ProductCreatedEvent;
 import com.jskno.productsapp.domain.CreateProductRestModel;
 import com.jskno.productsapp.domain.ErrorCode;
-import com.jskno.productsapp.domain.ProductCreatedEvent;
 import com.jskno.productsapp.exception.ProductException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;

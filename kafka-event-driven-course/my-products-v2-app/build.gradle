@@ -28,7 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.kafka:spring-kafka'
 
-    implementation 'com.jskno:my-kafka-event-driven-model:1.0'
+    //implementation 'com.jskno:my-kafka-event-driven-model:1.0'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

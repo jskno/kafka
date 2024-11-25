@@ -13,8 +13,9 @@ import java.math.BigDecimal;
 @Builder
 public class ProductCreatedEvent {
 
-    private String id;
-    private String title;
-    private BigDecimal price;
-    private Integer quantity;
+    private String id2;
+    private String title2;
+    private BigDecimal price2;
+    private Long quantity2;
+    private String description;
 }

@@ -7,10 +7,9 @@ import java.math.BigDecimal;
 
 @Data
 @Builder
-public class ProductCreatedEvent {
+public class CreateProductRestModel {
 
-    private String id;
     private String title;
     private BigDecimal price;
-    private Integer quantity;
+    private Long quantity;
 }

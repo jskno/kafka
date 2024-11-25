@@ -11,10 +11,10 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductCreatedEvent {
+public class ProductCreatedEventV3 {
 
     private String id;
-    private String title;
+    private String description;
     private BigDecimal price;
-    private Integer quantity;
+    private Long quantity;
 }
