@@ -1,6 +1,6 @@
 package com.jskno.productsapp.config;
 
-import com.jskno.kafka.event.driven.ProductCreatedEvent;
+import com.jskno.productsapp.domain.ProductCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-public class KafkaProducerConfig {
+public class KafkaProducerConfigV1 {
 
     private final MyKafkaProperties myKafkaProperties;
 
@@ -43,8 +43,7 @@ public class KafkaProducerConfig {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
-    @Primary
-    @Bean
+    @Bean("kafkaTemplateV1-EventWithDifferentPackage")
     KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }

@@ -22,7 +22,7 @@ public class ProductServiceV2 {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String topicName;
 
-    public ProductServiceV2(@Qualifier("kafkaTemplateForV2") KafkaTemplate<String, String> kafkaTemplate,
+    public ProductServiceV2(@Qualifier("kafkaTemplateV2-StringSerializer") KafkaTemplate<String, String> kafkaTemplate,
                             @Value("${product.created.events.topic}") String topicName) {
         this.kafkaTemplate = kafkaTemplate;
         this.topicName = topicName;

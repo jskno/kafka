@@ -1,8 +1,12 @@
 package com.jskno.productsapp.service;
 
-import com.jskno.kafka.event.driven.ProductCreatedEventV3;
+import com.jskno.kafka.event.driven.ProductCreatedEvent;
+import com.jskno.kafka.event.driven.ProductCreatedEventV2;
 import com.jskno.productsapp.domain.CreateProductRestModel;
+import com.jskno.productsapp.domain.ErrorCode;
+import com.jskno.productsapp.exception.ProductException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -10,16 +14,18 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Slf4j
-public class ProductServiceV3 {
+public class ProductServiceV2 {
 
-    private final KafkaTemplate<String, ProductCreatedEventV3> kafkaTemplate;
+    private final KafkaTemplate<String, ProductCreatedEventV2> kafkaTemplate;
     private final String topicName;
 
-    public ProductServiceV3(KafkaTemplate<String, ProductCreatedEventV3> kafkaTemplate,
-                            @Value("${product.created.events.topic}") String topicName) {
+    public ProductServiceV2(
+            KafkaTemplate<String, ProductCreatedEventV2> kafkaTemplate,
+            @Value("${product.created.events.topic}") String topicName) {
         this.kafkaTemplate = kafkaTemplate;
         this.topicName = topicName;
     }
@@ -27,14 +33,14 @@ public class ProductServiceV3 {
     public String createProduct(CreateProductRestModel product) {
         String productId = UUID.randomUUID().toString();
         // TODO Persist product in DDBB
-        ProductCreatedEventV3 event = ProductCreatedEventV3.builder()
+        ProductCreatedEventV2 event = ProductCreatedEventV2.builder()
                 .id(productId)
-                .description("Some Description")
+                .description(product.getTitle())
                 .price(product.getPrice())
                 .quantity(product.getQuantity())
                 .build();
 
-        CompletableFuture<SendResult<String, ProductCreatedEventV3>> sendResult = kafkaTemplate.send(topicName, productId, event);
+        CompletableFuture<SendResult<String, ProductCreatedEventV2>> sendResult = kafkaTemplate.send(topicName, productId, event);
 
         sendResult.whenComplete((result, throwable) -> {
             if (throwable != null) {
@@ -45,8 +51,10 @@ public class ProductServiceV3 {
             }
         });
 
+        // To make the call sync
+        //sendResult.join();
+
         log.info("***** Returning product id *******");
         return productId;
     }
-
 }

@@ -19,4 +19,5 @@ public class KafkaConfig {
                 .configs(Map.of("min.insync.replicas", "2"))
                 .build();
     }
+
 }

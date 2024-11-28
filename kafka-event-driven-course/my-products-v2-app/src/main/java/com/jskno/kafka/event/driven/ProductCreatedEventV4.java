@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductCreatedEventV3 {
+public class ProductCreatedEventV4 {
 
     private String id;
     private String description;

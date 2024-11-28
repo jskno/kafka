@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class ProductCreatedEvent {
 
+    // We name this a ProductCreatedEventV2
     private String id2;
     private String title2;
     private BigDecimal price2;

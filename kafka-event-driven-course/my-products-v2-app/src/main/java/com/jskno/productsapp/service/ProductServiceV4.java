@@ -1,6 +1,6 @@
 package com.jskno.productsapp.service;
 
-import com.jskno.kafka.event.driven.ProductCreatedEvent;
+import com.jskno.kafka.event.driven.ProductCreatedEventV4;
 import com.jskno.productsapp.domain.CreateProductRestModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +13,13 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
-public class ProductService {
+public class ProductServiceV4 {
 
-    private final KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, ProductCreatedEventV4> kafkaTemplate;
     private final String topicName;
 
-    public ProductService(KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate,
-                          @Value("${product.created.events.topic}") String topicName) {
+    public ProductServiceV4(KafkaTemplate<String, ProductCreatedEventV4> kafkaTemplate,
+                            @Value("${product.created.events.topic}") String topicName) {
         this.kafkaTemplate = kafkaTemplate;
         this.topicName = topicName;
     }
@@ -27,14 +27,14 @@ public class ProductService {
     public String createProduct(CreateProductRestModel product) {
         String productId = UUID.randomUUID().toString();
         // TODO Persist product in DDBB
-        ProductCreatedEvent event = ProductCreatedEvent.builder()
+        ProductCreatedEventV4 event = ProductCreatedEventV4.builder()
                 .id(productId)
-                .title(product.getTitle())
+                .description("Some Description")
                 .price(product.getPrice())
                 .quantity(product.getQuantity())
                 .build();
 
-        CompletableFuture<SendResult<String, ProductCreatedEvent>> sendResult = kafkaTemplate.send(topicName, productId, event);
+        CompletableFuture<SendResult<String, ProductCreatedEventV4>> sendResult = kafkaTemplate.send(topicName, productId, event);
 
         sendResult.whenComplete((result, throwable) -> {
             if (throwable != null) {
