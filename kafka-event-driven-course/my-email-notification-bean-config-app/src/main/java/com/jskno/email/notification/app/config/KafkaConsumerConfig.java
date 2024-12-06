@@ -23,7 +23,6 @@ import java.util.Map;
 public class KafkaConsumerConfig {
 
     private final KafkaConsumerProperties consumerProperties;
-    private final KafkaProducerProperties producerProperties;
 
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
@@ -52,17 +51,4 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    @Bean
-    KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
-    }
-
-    @Bean
-    ProducerFactory<String, Object> producerFactory() {
-        Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerProperties.getBootstrapServers());
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        return new DefaultKafkaProducerFactory<>(config);
-    }
 }

@@ -9,7 +9,7 @@ import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Component;
 
 @Slf4j
-@Component
+//@Component
 public class ProductCreatedEventConsumerV2RetryAndDLQ {
 
     @RetryableTopic(dltTopicSuffix = "-my-dlt")

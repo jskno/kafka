@@ -7,7 +7,7 @@ import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 @KafkaListener(
         groupId = "one-topic-two-types-two-methods",
         topics = {"${product.created.events.topic}"}
