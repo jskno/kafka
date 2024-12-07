@@ -14,7 +14,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class ProductCreatedEventConsumerV5ConsumingDLQ {

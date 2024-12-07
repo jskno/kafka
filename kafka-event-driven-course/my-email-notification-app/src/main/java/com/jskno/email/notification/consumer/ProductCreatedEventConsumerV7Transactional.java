@@ -19,15 +19,20 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
-//@Component
+@Component
+@KafkaListener(
+        groupId = "one-topic-dlq",
+        topics = {"${product.created.events.topic}"}
+)
 @RequiredArgsConstructor
 @Slf4j
-public class ProductCreatedEventConsumerV6Database {
+public class ProductCreatedEventConsumerV7Transactional {
 
     private final RestTemplate restTemplate;
     private final ProcessEventRepository processEventRepository;
@@ -39,10 +44,7 @@ public class ProductCreatedEventConsumerV6Database {
             //kafkaTemplate = "retryableTopicKafkaTemplate",
             dltStrategy = DltStrategy.ALWAYS_RETRY_ON_ERROR
     )
-    @KafkaListener(
-            groupId = "one-topic-dlq",
-            topics = {"${product.created.events.topic}"}
-    )
+    @KafkaHandler
     public void handle(@Payload ProductCreatedEvent productCreatedEvent,
                        @Header String messageId,
                        @Header(KafkaHeaders.RECEIVED_KEY) String receivedKey,
@@ -63,13 +65,6 @@ public class ProductCreatedEventConsumerV6Database {
             return;
         }
 
-        if (productCreatedEvent.getTitle().equals("Errors")) {
-            throw new NotRetryableException("An error took place. No need to consume this message again.");
-        }
-        //if(productCreatedEvent.getTitle().equals("NoneError")) {
-        //    throw new RetryableException("");
-        //}
-
         String requestUrl = "http://localhost:8088/response/200";
         try {
             ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
@@ -77,10 +72,13 @@ public class ProductCreatedEventConsumerV6Database {
                 log.info("Received response from a remote service: {}", response.getBody());
             }
         } catch (ResourceAccessException ex) {
-            log.error(ex.getMessage());
+            log.error("ResourceAccessException: " + ex.getMessage());
             throw new RetryableException(ex);
+        } catch (HttpServerErrorException ex) {
+            log.error("HttpServerErrorException: " + ex.getMessage());
+            throw new NotRetryableException(ex);
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            log.error("Exception: " + ex.getMessage());
             throw new NotRetryableException(ex);
         }
 
