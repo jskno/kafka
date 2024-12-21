@@ -1,0 +1,2 @@
+rootProject.name = 'my-saga-pattern-orchestration'
+include('core', 'credit-card-processor-service', 'orders-service', 'payments-service', 'products-service')
