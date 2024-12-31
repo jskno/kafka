@@ -5,21 +5,25 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.Produced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 
 // sudo ./bin/kafka-server-start.sh config/kraft/server.properties
 // ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-processor-input
-// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic word-processor-output --from-beginning
-public class H_MergeApp {
+// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic map-values-target-default-serdes --property print.key=true --property print.value=true --property key.separator=: --from-beginning
+public class J1_SInkApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(H_MergeApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(J1_SInkApp.class);
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -44,7 +48,9 @@ public class H_MergeApp {
     private static Properties buildStreamsProperties() {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "merge-processor");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "sink-values-default-processor");
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         return props;
     }
 
@@ -57,28 +63,12 @@ public class H_MergeApp {
                         withName("word-processor-input")
                         .withOffsetResetPolicy(Topology.AutoOffsetReset.EARLIEST));
 
-        // split-stream-apache
-        // split-stream-kafka
-        // split-stream-streams
-        // split-stream-default
-        // NOTE: The event with value "kafka apache streams" will go only to the apache branch
-        Map<String, KStream<String, String>> kStreamMap = sourceStream
-                .split(Named.as("split-stream-"))
-                .branch((k, v) -> v.contains("apache"), Branched.as("apache"))
-                .branch((k, v) -> v.contains("kafka"), Branched.as("kafka"))
-                .branch((k, v) -> v.contains("streams"),
-                        Branched.withFunction(ks -> ks.mapValues(e -> e.toUpperCase()), "streams"))
-                .defaultBranch(Branched.as("default"));
-
-        kStreamMap.get("split-stream-apache").print(Printed.<String, String>toSysOut().withLabel("apache"));
-        kStreamMap.get("split-stream-kafka").print(Printed.<String, String>toSysOut().withLabel("kafka"));
-        kStreamMap.get("split-stream-streams").print(Printed.<String, String>toSysOut().withLabel("streams"));
-        kStreamMap.get("split-stream-default").print(Printed.<String, String>toSysOut().withLabel("default"));
-
-        kStreamMap.get("split-stream-streams")
-                .merge(kStreamMap.get("split-stream-default"), Named.as("merge-processor"))
-                .print(Printed.<String, String>toSysOut().withLabel("merged"));
-
+        sourceStream
+                .flatMapValues(v -> Arrays.stream(v.split("\\s+"))
+                .map(String::toUpperCase)
+                .collect(Collectors.toList()), Named.as("map-values-default"))
+                .peek((k, v) -> LOGGER.info("MapValues Word Processor Key: " + k + " Value: " + v))
+                .to("map-values-target-default-serdes");
 
         return builder.build();
     }
