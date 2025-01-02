@@ -1,4 +1,4 @@
-package com.jskno.stateless_app;
+package com.jskno.a_stateless_app;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;

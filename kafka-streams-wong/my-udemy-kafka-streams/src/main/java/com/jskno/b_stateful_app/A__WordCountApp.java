@@ -1,4 +1,4 @@
-package com.jskno.stateful_app;
+package com.jskno.b_stateful_app;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.*;
@@ -21,9 +21,33 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 
+// 1. Start the server
 // sudo ./bin/kafka-server-start.sh config/kraft/server.properties
-// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-processor-input
-// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic word-processor-output --from-beginning
+
+// 2. Create the two topics we need
+// ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic words-input --partitions 3 --replication-factor 1
+// ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic words-count-output --partitions 3 --replication-factor 1
+
+// 3. Check the topics
+// ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+// 4. Run the app
+// 5. Check the topics again and the kafka/statestore folder structure
+// ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+//              stateful_word-processor-stateful-transform-store-changelog
+//              APPLICATION_ID + STATE_STORE_NAME + -changelog
+//              words-count-output
+//              words-input
+
+// 6. Produce some records in the topics
+// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic words-input
+//      hello kafka
+//      hello streams
+//      hello apache
+//      hello world
+
+// 7. Consume at the same time from the output topic
+// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic words-count-output --from-beginning
 public class A__WordCountApp {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(A__WordCountApp.class);
@@ -52,7 +76,9 @@ public class A__WordCountApp {
     private static Properties buildStreamsProperties() {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stateful_word-processor");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "stateful-app");
+        props.put(StreamsConfig.STATE_DIR_CONFIG, "./kafka/statestore");
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 3);
         return props;
     }
 

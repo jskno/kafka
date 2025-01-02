@@ -1,12 +1,13 @@
-package com.jskno.stateless_app;
+package com.jskno.a_stateless_app;
 
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.Named;
-import org.apache.kafka.streams.kstream.Printed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,10 +19,10 @@ import java.util.stream.Collectors;
 
 // sudo ./bin/kafka-server-start.sh config/kraft/server.properties
 // ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-processor-input
-// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic word-processor-output --from-beginning
-public class E_FlatMapApp {
+// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic map-values-target-default-serdes --property print.key=true --property print.value=true --property key.separator=: --from-beginning
+public class J1_SInkApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(E_FlatMapApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(J1_SInkApp.class);
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -46,7 +47,9 @@ public class E_FlatMapApp {
     private static Properties buildStreamsProperties() {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "flat-processor");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "sink-values-default-processor");
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         return props;
     }
 
@@ -60,10 +63,11 @@ public class E_FlatMapApp {
                         .withOffsetResetPolicy(Topology.AutoOffsetReset.EARLIEST));
 
         sourceStream
-                .flatMap((k, v) -> Arrays.stream(v.split("\\s+"))
-                        .map(e -> KeyValue.pair(e, e.length()))
-                        .collect(Collectors.toList()), Named.as("flat-map-processor"))
-                .print(Printed.<String, Integer>toSysOut().withLabel("flatMap"));
+                .flatMapValues(v -> Arrays.stream(v.split("\\s+"))
+                .map(String::toUpperCase)
+                .collect(Collectors.toList()), Named.as("map-values-default"))
+                .peek((k, v) -> LOGGER.info("MapValues Word Processor Key: " + k + " Value: " + v))
+                .to("map-values-target-default-serdes");
 
         return builder.build();
     }

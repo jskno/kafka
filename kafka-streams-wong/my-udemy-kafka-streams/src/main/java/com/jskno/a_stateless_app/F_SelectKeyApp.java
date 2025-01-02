@@ -1,4 +1,4 @@
-package com.jskno.stateless_app;
+package com.jskno.a_stateless_app;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -17,11 +17,11 @@ import java.util.concurrent.CountDownLatch;
 
 
 // sudo ./bin/kafka-server-start.sh config/kraft/server.properties
-// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-source-processor --property key.separator=: --property parse.key=true
+// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-processor-input
 // ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic word-processor-output --from-beginning
-public class D_FilteringApp {
+public class F_SelectKeyApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(D_FilteringApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(F_SelectKeyApp.class);
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -46,7 +46,7 @@ public class D_FilteringApp {
     private static Properties buildStreamsProperties() {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "filtering-word-processor");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "select-key-processor");
         return props;
     }
 
@@ -59,8 +59,9 @@ public class D_FilteringApp {
                         withName("word-processor-input")
                         .withOffsetResetPolicy(Topology.AutoOffsetReset.EARLIEST));
 
-        sourceStream.filter((k, v) -> v.contains("Kafka"), Named.as("filter-processor"))
-                .print(Printed.<String, String>toSysOut().withLabel("filtering"));
+        sourceStream
+                .selectKey((noKey, v) -> v, Named.as("select-key-processor"))
+                .print(Printed.<String, String>toSysOut().withLabel("selectKey"));
 
         return builder.build();
     }
