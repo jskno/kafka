@@ -2,10 +2,7 @@ package com.jskno.b_stateful_app;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.*;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Named;
-import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.processor.api.Processor;
 import org.apache.kafka.streams.processor.api.ProcessorContext;
 import org.apache.kafka.streams.processor.api.Record;
@@ -47,11 +44,11 @@ import java.util.stream.Collectors;
 //      hello world
 
 // 7. Consume at the same time from the output topic
-// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic words-count-output --from-beginning
-public class A__WordCountApp {
+// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic words-count-output --property key.separator=: --property print.key=true --property print.value=true --from-beginning
+public class A1_WordCountApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(A__WordCountApp.class);
-    private final static String STATE_STORE_NAME = "stateful-transform-store";
+    private final static Logger LOGGER = LoggerFactory.getLogger(A1_WordCountApp.class);
+    public final static String STATE_STORE_NAME = "a1-words-store";
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -84,52 +81,56 @@ public class A__WordCountApp {
 
     private static Topology buildTopology() {
         StoreBuilder<KeyValueStore<String, Integer>> keyValueStoreBuilder = Stores.keyValueStoreBuilder(
-                Stores.persistentKeyValueStore(STATE_STORE_NAME), Serdes.String(), Serdes.Integer()
-        );
+                Stores.persistentKeyValueStore(STATE_STORE_NAME), Serdes.String(), Serdes.Integer());
         StreamsBuilder builder = new StreamsBuilder();
+
         builder.addStateStore(keyValueStoreBuilder);
 
         // (null, "hello kafka")
         KStream<String, String> sourceStream = builder.stream(
                 "words-input",
                 Consumed.with(Serdes.String(), Serdes.String()).
-                        withName("stateful-word-processor-input")
+                        withName("source-processor")
                         .withOffsetResetPolicy(Topology.AutoOffsetReset.LATEST));
 
         // ("hello", "hello")
         // ("kafka", "kafka")
         sourceStream
                 .flatMap((k, v) ->
-                                Arrays.stream(v.split("\\s+")).map(e -> KeyValue.pair(e, e.length())).collect(Collectors.toList()),
-                        Named.as("flat-sentence-op"))
-                .process(() -> new Processor<String, Integer, String, Integer>() {
+                                Arrays.stream(v.split("\\s+")).map(e -> KeyValue.pair(e, e)).collect(Collectors.toList()),
+                        Named.as("flat-map-op"))
+                .repartition(Repartitioned.with(Serdes.String(), Serdes.String()))
+                .process(() -> new Processor<String, String, String, Integer>() {
 
-                            private KeyValueStore<String, Integer> store;
+                    private KeyValueStore<String, Integer> store;
 
-                            @Override
-                            public void init(ProcessorContext<String, Integer> context) {
-                                store = context.getStateStore(STATE_STORE_NAME);
-                                Processor.super.init(context);
-                            }
+                    @Override
+                    public void init(ProcessorContext<String, Integer> context) {
+                        store = context.getStateStore(STATE_STORE_NAME);
+                        //Processor.super.init(context);
+                    }
 
-                            @Override
-                            public void process(Record<String, Integer> record) {
-                                Integer count = store.get(record.key());
-                                if (count == null) {
-                                    count = 1;
-                                } else {
-                                    count++;
-                                }
-                                store.put(record.key(), count);
-                            }
+                    @Override
+                    public void process(Record<String, String> record) {
+                        Integer count = store.get(record.key());
+                        if (count == null) {
+                            count = 1;
+                        } else {
+                            count++;
+                        }
+                        store.put(record.key(), count);
+                    }
 
-                            @Override
-                            public void close() {
-                                Processor.super.close();
-                            }
+                    @Override
+                    public void close() {
+                        //Processor.super.close();
+                    }
+
+
                         }, Named.as("stateful-transform-processor"), STATE_STORE_NAME)
-                .peek((k, v) -> LOGGER.info("Key: " + k + " Value: " + v))
+                .peek((k, v) -> LOGGER.info("Word: {} Count: {}", k, v))
                 .to("words-count-output", Produced.with(Serdes.String(), Serdes.Integer()));
+
 
         return builder.build();
     }
