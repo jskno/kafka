@@ -53,9 +53,9 @@ import java.util.stream.Collectors;
 //      --property key.separator=:
 //      --value-deserializer org.apache.kafka.common.serialization.IntegerDeserializer
 //      --from-beginning
-public class A2_WordCountApp {
+public class A3_WordCountApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(A2_WordCountApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(A3_WordCountApp.class);
     public final static String STATE_STORE_NAME = "a1-words-store";
 
     public static void main(String[] args) throws InterruptedException {
@@ -108,13 +108,13 @@ public class A2_WordCountApp {
                                 Arrays.stream(v.split("\\s+")).map(e -> KeyValue.pair(e, e)).collect(Collectors.toList()),
                         Named.as("flat-map-op"))
                 .repartition(Repartitioned.with(Serdes.String(), Serdes.String()))
-                .process(() -> new Processor<String, String, String, Integer>() {
+                .process(() -> new Processor<String, String, String, String>() {
 
                     private KeyValueStore<String, Integer> store;
-                    private ProcessorContext<String, Integer> context;
+                    private ProcessorContext<String, String> context;
 
                     @Override
-                    public void init(ProcessorContext<String, Integer> context) {
+                    public void init(ProcessorContext<String, String> context) {
                         this.context = context;
                         store = context.getStateStore(STATE_STORE_NAME);
                         //Processor.super.init(context);
@@ -129,7 +129,7 @@ public class A2_WordCountApp {
                             count++;
                         }
                         store.put(record.key(), count);
-                        this.context.forward(new Record<>(record.key(), count, record.timestamp()));
+                        this.context.forward(new Record<>(record.key(), count.toString(), record.timestamp()));
                     }
 
                     @Override
@@ -140,7 +140,7 @@ public class A2_WordCountApp {
 
                         }, Named.as("stateful-transform-processor"), STATE_STORE_NAME)
                 .peek((k, v) -> LOGGER.info("Word: {} Count: {}", k, v))
-                .to("words-count-output", Produced.with(Serdes.String(), Serdes.Integer()));
+                .to("words-count-output", Produced.with(Serdes.String(), Serdes.String()));
 
 
         return builder.build();

@@ -1,7 +1,6 @@
 package com.jskno.b_stateful_app.processor;
 
-import com.jskno.b_stateful_app.A1_WordCountApp;
-import com.jskno.b_stateful_app.A2_WordCountApp;
+import com.jskno.b_stateful_app.A4_WordCountApp;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.PunctuationType;
 import org.apache.kafka.streams.processor.api.Processor;
@@ -20,7 +19,7 @@ public class CustomProcessor implements Processor<String, String, String, Intege
     @Override
     public void init(ProcessorContext<String, Integer> context) {
         this.context = context;
-        store = context.getStateStore(A2_WordCountApp.STATE_STORE_NAME);
+        store = context.getStateStore(A4_WordCountApp.STATE_STORE_NAME);
         this.context.schedule(Duration.ofSeconds(30), PunctuationType.STREAM_TIME, this::forwardAll);
     }
 

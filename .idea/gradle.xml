@@ -11,6 +11,9 @@
           </set>
         </option>
       </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$/learn-kafka-courses/kafka-streams" />
+      </GradleProjectSettings>
     </option>
   </component>
 </project>
