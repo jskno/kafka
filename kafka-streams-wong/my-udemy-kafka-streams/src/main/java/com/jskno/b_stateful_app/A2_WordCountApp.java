@@ -44,19 +44,21 @@ import java.util.stream.Collectors;
 //      hello world
 
 // 7. Consume at the same time from the output topic
-//
- //   /bin/kafka-console-consumer.sh \
-//      --bootstrap-server localhost:9092 \
-//      --topic words-count-output \
-//      --property print.key=true \
-//      --property print.value=true \
-//      --property key.separator=:
-//      --value-deserializer org.apache.kafka.common.serialization.IntegerDeserializer
-//      --from-beginning
+/*
+/bin/kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 \
+--topic words-count-output \
+--property print.key=true \
+--property print.value=true \
+--property key.separator=: \
+--value-deserializer org.apache.kafka.common.serialization.IntegerDeserializer \
+--from-beginning
+ */
+// This actually does not work because the Apache Integer Deserializer does not understand the Serdes Integer Deserializer
 public class A2_WordCountApp {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(A2_WordCountApp.class);
-    public final static String STATE_STORE_NAME = "a1-words-store";
+    public final static String STATE_STORE_NAME = "a3-words-store";
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -129,7 +131,7 @@ public class A2_WordCountApp {
                             count++;
                         }
                         store.put(record.key(), count);
-                        this.context.forward(new Record<>(record.key(), count, record.timestamp()));
+                        context.forward(new Record<>(record.key(), count, record.timestamp()));
                     }
 
                     @Override

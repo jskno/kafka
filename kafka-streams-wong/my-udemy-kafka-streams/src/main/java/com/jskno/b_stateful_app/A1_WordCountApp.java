@@ -15,6 +15,7 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
+// TRANSFORM DEPRECATED
 public class A1_WordCountApp {
 
     private final static Logger LOG = LoggerFactory.getLogger(A1_WordCountApp.class);

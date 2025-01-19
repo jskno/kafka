@@ -31,32 +31,39 @@ import java.util.stream.Collectors;
 // 4. Run the app
 // 5. Check the topics again and the kafka/statestore folder structure
 // ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
-//              stateful_word-processor-stateful-transform-store-changelog
-//              APPLICATION_ID + STATE_STORE_NAME + -changelog
+// Two topics previously created:
 //              words-count-output
 //              words-input
 
+// Two internal topics created by the KakfaStreams app:
+//      stateful-app-KSTREAM-REPARTITION-0000000002-repartition --> APP_ID Repartition topic, very importante because the 3 tppic will have 3 partitions and the topic will be assigned according to its new key (hello, kafka, scala) so that each task will process from same topic and the state store will store all values from same keys
+//      stateful-app-a3-words-store-changelog --> APPLICATION_ID + STATE_STORE_NAME + -changelog (stateful-app)+(a3-words-store)+-changelog
+
+
 // 6. Produce some records in the topics
-// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic words-input
-//      hello kafka
-//      hello streams
-//      hello apache
-//      hello world
+/*
+./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic words-input
+    hello kafka
+    hello streams
+    hello apache
+    hello world
+
+ */
 
 // 7. Consume at the same time from the output topic
-//
- //   /bin/kafka-console-consumer.sh \
-//      --bootstrap-server localhost:9092 \
-//      --topic words-count-output \
-//      --property print.key=true \
-//      --property print.value=true \
-//      --property key.separator=:
-//      --value-deserializer org.apache.kafka.common.serialization.IntegerDeserializer
-//      --from-beginning
+/*
+./bin/kafka-console-consumer.sh \
+--bootstrap-server localhost:9092 \
+--topic words-count-output \
+--property print.key=true \
+--property print.value=true \
+--property key.separator=: \
+--from-beginning
+ */
 public class A3_WordCountApp {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(A3_WordCountApp.class);
-    public final static String STATE_STORE_NAME = "a1-words-store";
+    public final static String STATE_STORE_NAME = "a3-words-store";
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -129,7 +136,7 @@ public class A3_WordCountApp {
                             count++;
                         }
                         store.put(record.key(), count);
-                        this.context.forward(new Record<>(record.key(), count.toString(), record.timestamp()));
+                        context.forward(new Record<>(record.key(), count.toString(), record.timestamp()));
                     }
 
                     @Override
