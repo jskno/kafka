@@ -11,6 +11,10 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.processor.api.*;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +36,10 @@ import java.util.concurrent.CountDownLatch;
 // ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic xmall.pattern.transaction --from-beginning
 // ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic xmall.elect.transaction --from-beginning
 // ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic xmall.coffee.transaction --from-beginning
-public class XMallTransactionApp {
+public class B_XMallTransactionStatefulApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(XMallTransactionApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(B_XMallTransactionStatefulApp.class);
+    private final static String STORES_NAME = "transaction-store";
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -59,12 +64,15 @@ public class XMallTransactionApp {
     private static Properties buildStreamsProperties() {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "transactions-processor");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "transactions-stateful");
         return props;
     }
 
     private static Topology buildTopology() {
+        StoreBuilder<KeyValueStore<String, Integer>> keyValueStoreBuilder = Stores.keyValueStoreBuilder(
+                Stores.persistentKeyValueStore(STORES_NAME), Serdes.String(), Serdes.Integer());
         StreamsBuilder builder = new StreamsBuilder();
+        builder.addStateStore(keyValueStoreBuilder);
 
         KStream<String, Transaction> transactionSource = builder.stream(
                 "xmall.transaction",
@@ -88,6 +96,47 @@ public class XMallTransactionApp {
                         .purchaseTotal(v.price().multiply(BigDecimal.valueOf(v.quantity())))
                         .rewardPoints(v.price().multiply(BigDecimal.valueOf(v.quantity())).intValue())
                         .build(), Named.as("customer-reward"))
+                .selectKey((k, v) -> v.customerId())
+                .repartition(Repartitioned.with(Serdes.String(), JsonSerdes.of(CustomerReward.class)))
+                .processValues(() -> new FixedKeyProcessor<String, CustomerReward, CustomerReward>() {
+
+                    private KeyValueStore<String, Integer> keyValueStore;
+                    private FixedKeyProcessorContext<String, CustomerReward> context;
+
+                    @Override
+                    public void init(FixedKeyProcessorContext<String, CustomerReward> context) {
+                        this.context = context;
+                        keyValueStore = context.getStateStore(STORES_NAME);
+                    }
+
+                    @Override
+                    public void process(FixedKeyRecord<String, CustomerReward> fixedKeyRecord) {
+                        CustomerReward reward = fixedKeyRecord.value();
+                        Integer totalRewardPoints = keyValueStore.get(fixedKeyRecord.key());
+                        if (totalRewardPoints == null || totalRewardPoints == 0) {
+                            totalRewardPoints = reward.rewardPoints();
+                        } else {
+                            totalRewardPoints += reward.rewardPoints();
+                        }
+                        keyValueStore.put(fixedKeyRecord.key(), totalRewardPoints);
+
+                        // Create a new TransactionReward with updated total points
+                        CustomerReward newTransactionReward = CustomerReward.builder()
+                                .customerId(reward.customerId())
+                                .purchaseTotal(reward.purchaseTotal())
+                                .rewardPoints(reward.rewardPoints())
+                                .totalPoints(totalRewardPoints)
+                                .build();
+
+                        // Forward the updated record
+                        context.forward(fixedKeyRecord.withValue(newTransactionReward));
+                    }
+
+                    @Override
+                    public void close() {
+                        // No specific cleanup required
+                    }
+                }, Named.as("total-reward-points"), STORES_NAME)
                 .to("xmall.reward.transaction", Produced.with(Serdes.String(), JsonSerdes.of(CustomerReward.class)));
 
         transactionMasked

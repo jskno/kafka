@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public record CustomerReward(
         String customerId,
         BigDecimal purchaseTotal,
-        Integer rewardPoints
+        Integer rewardPoints,
+        Integer totalPoints
 ) {
 }

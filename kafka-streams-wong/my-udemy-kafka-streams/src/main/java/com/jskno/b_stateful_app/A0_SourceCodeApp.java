@@ -38,7 +38,6 @@ public class A0_SourceCodeApp {
         LOGGER.info("WordProcessorApp is started");
 
         latch.await();
-
     }
 
     private static Properties buildStreamsProperties() {
