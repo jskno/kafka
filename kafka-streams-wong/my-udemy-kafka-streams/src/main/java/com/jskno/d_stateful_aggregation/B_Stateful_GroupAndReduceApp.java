@@ -1,25 +1,23 @@
-package com.jskno.b_stateful_app;
+package com.jskno.d_stateful_aggregation;
 
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.kstream.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 
 // sudo ./bin/kafka-server-start.sh config/kraft/server.properties
 // ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-processor-input
 // ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic word-processor-output --from-beginning
-public class A0_SourceCodeApp {
+public class B_Stateful_GroupAndReduceApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(A0_SourceCodeApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(B_Stateful_GroupAndReduceApp.class);
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -43,20 +41,41 @@ public class A0_SourceCodeApp {
     private static Properties buildStreamsProperties() {
         Properties props = new Properties();
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "word-processor");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "count-app");
         props.put(StreamsConfig.STATE_DIR_CONFIG, "/home/jskno/kafka-logs/statestore");
         props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 3);
+
+        // These two props control how often the stream task is entirely consume and process until final operation its topology
+        //props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);  // deprecated
+        props.put(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, 0);
+        //props.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000);
         return props;
     }
 
     private static Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
 
+        // <null, This is Kafka Stream>
+        // <null, I like Kafka Stream>
         KStream<String, String> sourceStream = builder.stream(
-                "word-processor-input",
+                "input-words",
                 Consumed.with(Serdes.String(), Serdes.String()).
-                        withName("word-processor-input")
+                        withName("word-processor")
                         .withOffsetResetPolicy(Topology.AutoOffsetReset.LATEST));
+
+        sourceStream
+                .flatMap((k, v) -> Arrays.stream(v.split("\\s+"))
+                        .map(e -> KeyValue.pair(e, 1L))
+                        .collect(Collectors.toList()), Named.as("flatmap-words"))
+                .groupByKey(Grouped.with(Serdes.String(), Serdes.Long()))
+                .reduce(new Reducer<Long>() {
+                    @Override
+                    public Long apply(Long aggValue, Long currentValue) {
+                        return aggValue + currentValue;
+                    }
+                }, Named.as("words-reducer"), Materialized.as("words-reducer"))
+                .toStream()
+                .print(Printed.<String, Long>toSysOut().withLabel("wc"));
 
         return builder.build();
     }
