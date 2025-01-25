@@ -1,0 +1,15 @@
+[
+{"username": "Alex Wang","department":"ELECT","salesAmount":1000.0},
+{"username": "Alice","department":"ELECT","salesAmount":2000.0},
+{"username": "Alex Wang","department":"ELECT","salesAmount":1100.0},
+{"username": "Alice","department":"ELECT","salesAmount":50.0},
+{"username": "Alice","department":"ELECT","salesAmount":140.0},
+{"username": "Jose","department":"IT","salesAmount":1340.0},
+{"username": "Alvaro","department":"COFFEE","salesAmount":200.0},
+{"username": "Eva","department":"COFFEE","salesAmount":1340.0},
+{"username": "Eva","department":"WWWW","salesAmount":1340.0},
+{"username": "Eva","department":"XXXX","salesAmount":1340.0}
+{"username": "Eva","department":"AAAA","salesAmount":1340.0}
+{"username": "Eva","department":"FFFF","salesAmount":1340.0}
+{"username": "Eva","department":"MMMM","salesAmount":1340.0}
+]
