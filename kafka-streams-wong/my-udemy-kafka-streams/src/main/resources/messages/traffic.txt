@@ -1,2 +1,5 @@
 {"page":"www.udemy.com","remoteAddress":"192.168.88.127"}
 {"page":"www.udemy.com","remoteAddress":"192.168.88.128"}
+
+{"page":"www.search.com","remoteAddress":"192.168.88.128"}
+{"page":"www.index.com","remoteAddress":"192.168.88.128"}
