@@ -25,6 +25,7 @@ public class A0_QueryableStateStoreServer {
             StoreQueryParameters<ReadOnlyKeyValueStore<String, SalesStats>> parameters = StoreQueryParameters
                     .fromNameAndType(stateStoreName, QueryableStoreTypes.keyValueStore());
             ReadOnlyKeyValueStore<String, SalesStats> keyValueStore = kafkaStreams.store(parameters);
+
             spark.Spark.get("/sales-stats", (request, response) -> {
                 response.type("application/json");
                 ArrayList<SalesStats> result = new ArrayList<>();

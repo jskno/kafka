@@ -1,4 +1,4 @@
-package com.jskno.f_complex_streams;
+package com.jskno.g_state_store;
 
 import com.jskno.f_complex_streams.model.Patient;
 import com.jskno.f_complex_streams.model.PatientWithSickRoom;
@@ -28,15 +28,16 @@ import java.util.concurrent.CountDownLatch;
 
 // ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic patient --property parse.key=true --property key.separator=,
 // ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic sickroom --property parse.key=true --property key.separator=,
-public class G_HearBeatMonitoringApp {
+public class A1_HearBeatMonitoringApp {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(G_HearBeatMonitoringApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(A1_HearBeatMonitoringApp.class);
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
         Topology topology = buildTopology();
 
         KafkaStreams streams = new KafkaStreams(topology, props);
+        new A0_QueryableWindowStateStoreServer(streams, "heartbeat-state-store").start();
 
         CountDownLatch latch = new CountDownLatch(1);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

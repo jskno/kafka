@@ -1,0 +1,11 @@
+P1,{"id":"P1","name":"Jenny","age":23,"sickRoomId":"S1"}
+P2,{"id":"P2","name":"Alice","age":33,"sickRoomId":"S2"}
+
+S1,{"id":"S1","doctorName":"Alex Wang"}
+S2,{"id":"S2","doctorName":"Jason"}
+
+for x in {1..90}; do echo "P1"; done |./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic heartbeat
+for x in {1..2}; do echo "P1"; done |./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic heartbeat
+
+for x in {1..90}; do echo "P2"; done |./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic heartbeat
+for x in {1..2}; do echo "P2"; done |./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic heartbeat
