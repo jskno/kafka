@@ -1,0 +1,12 @@
+A_KTableFromStreamBuilderApp
+
+user1:{"id":"user1","name":"Jose","age":48}
+user2:{"id":"user2","name":"Eva","age":6}
+user1:{"id":"user1","name":"Jose","age":50}
+
+B0_KTableFromKStreamApp
+B1_KTableFromKStreamApp
+
+null:{"id":"user1","name":"Jose","age":48}
+null:{"id":"user2","name":"Eva","age":6}
+null:{"id":"user1","name":"Jose","age":50}

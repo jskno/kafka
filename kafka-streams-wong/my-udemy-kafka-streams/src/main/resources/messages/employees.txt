@@ -1,0 +1,4 @@
+E001:{"empNo":"E001","name":"Alex","department":"Data&Cloud","age":58,"salary":7000.00}
+E002:{"empNo":"E002","name":"Alice","department":"Data&Cloud","age":67,"salary":27000.00}
+E003:{"empNo":"E002","name":"Jenny","department":"Sales","age":30,"salary":6000.00}
+E004:{"empNo":"E004","name":"Alvaro","department":"Data&Cloud","age":30,"salary":36000.00}

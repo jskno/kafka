@@ -5,7 +5,10 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Printed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +17,9 @@ import java.util.concurrent.CountDownLatch;
 
 
 // sudo ./bin/kafka-server-start.sh config/kraft/server.properties
-// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic word-processor-input
-// ./bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic word-processor-output --from-beginning
+// ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic users --partitions 3
+// ./bin/kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic users
+// ./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic users --property parse.key=true --property key.separator=:
 public class A_KTableFromStreamBuilderApp {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(A_KTableFromStreamBuilderApp.class);
@@ -50,6 +54,9 @@ public class A_KTableFromStreamBuilderApp {
 
     private static Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
+
+        // Users event example:
+        // user1:{"id":"user1",name:"Jose Cano","age":48}
 
         /**
          * 1. input records with null key will be dropped.
