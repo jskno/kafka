@@ -1,12 +1,11 @@
 package com.jskno.h_ktable.model;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Employee {
 
     private String empNo;
@@ -18,9 +17,6 @@ public class Employee {
     @Deprecated
     private double totalSalary;
 
-    public Employee() {
-    }
-
     public Employee(Builder builder) {
         this.empNo = builder.empNo;
         this.name = builder.name;
@@ -31,7 +27,7 @@ public class Employee {
         this.totalSalary = builder.salary;
     }
 
-    public static Builder newBuilder() {
+    public static Builder newBuilder(Object currentAgg) {
         return new Builder();
     }
 
