@@ -1,7 +1,9 @@
 package com.jskno.h_ktable;
 
 import com.jskno.h_ktable.model.Employee;
+import com.jskno.h_ktable.model.EmployeeStats;
 import com.jskno.serdes.JsonSerdes;
+import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.*;
@@ -30,10 +32,10 @@ import java.util.concurrent.CountDownLatch;
 --topic ktable-group-counting-operations-KTABLE-AGGREGATE-STATE-STORE-0000000004-repartition \
 --property key.separator=: --property print.key=true --property print.value=true --partition 1 --offset 0
  */
-public class J_KTableGroupReduceApp {
+public class K_KTableGroupAggregateApp {
 
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(J_KTableGroupReduceApp.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(K_KTableGroupAggregateApp.class);
 
     public static void main(String[] args) throws InterruptedException {
         Properties props = buildStreamsProperties();
@@ -73,31 +75,34 @@ public class J_KTableGroupReduceApp {
                         .withOffsetResetPolicy(Topology.AutoOffsetReset.EARLIEST));
 
         employeeKTable
-                .toStream()
-                .peek((k, v) -> LOGGER.info("Before GroupBy - Key: [{}], Value: [{}]", k, v))
-                .filter((k, v) -> v != null && v.getDepartment() != null)
-                .toTable()
                 .groupBy((k, v) -> KeyValue.pair(v.getDepartment(), v),
                         Grouped.with(Serdes.String(), JsonSerdes.of(Employee.class)))
-                .reduce(
+                .aggregate(
+                        // Initializer
+                        EmployeeStats::new,
                         // Adder
-                        (currentAgg, newValue) -> {
-                            LOGGER.info("adder--currentAgg:{},newValue:{}", currentAgg, newValue);
-                            Employee employee = Employee.newBuilder(currentAgg).build();
-                            employee.setTotalSalary(currentAgg.getTotalSalary() + newValue.getSalary());
-                            return employee;
+                        (key, newValue, agg) -> {
+                            LOGGER.info("Adder: {}, {}, {}", key, newValue, agg);
+                            if (agg.getDepartment() == null) {
+                                agg.setDepartment(newValue.getDepartment());
+                                agg.setTotalSalary(newValue.getSalary());
+                            } else {
+                                agg.setTotalSalary(agg.getTotalSalary() + newValue.getSalary());
+                            }
+                            return agg;
                         },
-                        //subtractor
-                        (currentAgg, oldValue) -> {
-                            LOGGER.info("subtractor--currentAgg:{},oldValue:{}", currentAgg, oldValue);
-                            Employee employee = Employee.newBuilder(currentAgg).build();
-                            employee.setTotalSalary(currentAgg.getTotalSalary() - oldValue.getSalary());
-                            return employee;
+                        // Subtract
+                        (key, oldValue, agg) -> {
+                            LOGGER.info("Subtract: {}, {}, {}", key, oldValue, agg);
+                            agg.setTotalSalary(agg.getTotalSalary() - oldValue.getSalary());
+                            return agg;
                         },
-                        Named.as("reducer"),
-                        Materialized.as("Total-salary-per-department"))
+                        Named.as("employee-group-aggregate"),
+                        Materialized.<String, EmployeeStats, KeyValueStore<Bytes, byte[]>>as("employee-group-aggregate")
+                                // We need to do that whenever we change the resulting type
+                                .withValueSerde(JsonSerdes.of(EmployeeStats.class)))
                 .toStream()
-                .foreach((k, v) -> LOGGER.info("department:[{}],total salary:[{} USD]", k, v.getTotalSalary()));
+                .print(Printed.<String, EmployeeStats>toSysOut().withLabel("aggregate-stats"));
 
 
         return builder.build();

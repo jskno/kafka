@@ -2,3 +2,4 @@ E001:{"empNo":"E001","name":"Alex","department":"DataCloud","age":58,"salary":70
 E002:{"empNo":"E002","name":"Alice","department":"DataCloud","age":67,"salary":27000.00}
 E003:{"empNo":"E003","name":"Jenny","department":"Sales","age":30,"salary":6000.00}
 E004:{"empNo":"E004","name":"Alvaro","department":"DataCloud","age":30,"salary":36000.00}
+E005:{"empNo":"E005","name":"Jenny","department":"Sales","age":30,"salary":60000.00}

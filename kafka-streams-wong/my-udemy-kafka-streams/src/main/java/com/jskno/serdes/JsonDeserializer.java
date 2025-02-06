@@ -21,6 +21,10 @@ class JsonDeserializer<T> implements Deserializer<T> {
 
     @Override
     public T deserialize(String topic, byte[] data) {
+        if (data == null) {
+            return null;
+        }
+
         try {
             return MAPPER.readValue(data, deserializedClass);
         } catch (IOException e) {
