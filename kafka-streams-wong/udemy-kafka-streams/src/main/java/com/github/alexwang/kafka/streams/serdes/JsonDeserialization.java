@@ -17,7 +17,7 @@ class JsonDeserialization<T> implements Deserializer<T> {
         try {
             return JsonSerialization.MAPPER.readValue(data, deserializeClass);
         } catch (Exception e) {
-            //ingore
+            //ignore
         }
         return null;
     }
